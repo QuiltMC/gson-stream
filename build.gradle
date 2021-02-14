@@ -33,8 +33,4 @@ publishing {
             }
         }
     }
-
-    repositories.each {
-        println(it.name)
-    }
 }
