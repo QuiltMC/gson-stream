@@ -1,36 +1,43 @@
 plugins {
-    id "java"
-    id "maven-publish"
+	id "java"
+	id "maven-publish"
 }
 
 group = "org.quiltmc"
 version = "1.0"
+archivesBaseName = "gson-stream"
 
 tasks.withType(JavaCompile).configureEach {
-    // Build for java 8
-    def targetVersion = 8
+	// Build for java 8
+	def targetVersion = 8
 
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.release = targetVersion
-    } else {
-        sourceCompatibility = JavaVersion.toVersion(targetVersion)
-        targetCompatibility = JavaVersion.toVersion(targetVersion)
-    }
+	if (JavaVersion.current().isJava9Compatible()) {
+		options.release = targetVersion
+	} else {
+		sourceCompatibility = JavaVersion.toVersion(targetVersion)
+		targetCompatibility = JavaVersion.toVersion(targetVersion)
+	}
 }
 
 publishing {
-    repositories {
-        def ENV = System.getenv()
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
 
-        if (ENV.MAVEN_URL) {
-            maven {
-                url = ENV.MAVEN_URL
+	repositories {
+		def ENV = System.getenv()
 
-                credentials {
-                    username = ENV.MAVEN_USERNAME
-                    password = ENV.MAVEN_PASSWORD
-                }
-            }
-        }
-    }
+		if (ENV.MAVEN_URL) {
+			maven {
+				url = ENV.MAVEN_URL
+
+				credentials {
+					username = ENV.MAVEN_USERNAME
+					password = ENV.MAVEN_PASSWORD
+				}
+			}
+		}
+	}
 }
