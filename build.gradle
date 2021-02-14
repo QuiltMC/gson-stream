@@ -27,10 +27,12 @@ publishing {
 	}
 
 	repositories {
+		// mavenLocal()
+
 		def ENV = System.getenv()
 
 		if (ENV.MAVEN_URL) {
-			maven {
+			repositories.maven {
 				url = ENV.MAVEN_URL
 
 				credentials {
