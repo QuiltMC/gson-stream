@@ -1,0 +1,50 @@
+plugins {
+    id "java"
+    id "maven-publish"
+}
+
+group = "org.quiltmc"
+version = "1.0"
+
+tasks.withType(JavaCompile).configureEach {
+    // Build for java 8
+    def targetVersion = 8
+
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.release = targetVersion
+    } else {
+        sourceCompatibility = JavaVersion.toVersion(targetVersion)
+        targetCompatibility = JavaVersion.toVersion(targetVersion)
+    }
+}
+
+publishing {
+    repositories {
+        def ENV = System.getenv()
+
+        if (ENV.MAVEN_URL) {
+            maven {
+                url = ENV.MAVEN_URL
+
+                credentials {
+                    username = ENV.MAVEN_USERNAME
+                    password = ENV.MAVEN_PASSWORD
+                }
+            }
+        }
+    }
+}
+
+task checkVersion {
+    doFirst {
+        def xml = new URL("https://maven.quiltmc.org/org/quiltmc/gson-stream/maven-metadata.xml").text
+        def metadata = new XmlSlurper().parseText(xml)
+        def versions = metadata.versioning.versions.version*.text()
+
+        if (versions.contains(version)) {
+            throw new RuntimeException("$version has already been released!")
+        }
+    }
+}
+
+publish.mustRunAfter checkVersion
