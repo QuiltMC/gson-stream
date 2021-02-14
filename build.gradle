@@ -34,17 +34,3 @@ publishing {
         }
     }
 }
-
-task checkVersion {
-    doFirst {
-        def xml = new URL("https://maven.quiltmc.org/org/quiltmc/gson-stream/maven-metadata.xml").text
-        def metadata = new XmlSlurper().parseText(xml)
-        def versions = metadata.versioning.versions.version*.text()
-
-        if (versions.contains(version)) {
-            throw new RuntimeException("$version has already been released!")
-        }
-    }
-}
-
-publish.mustRunAfter checkVersion
